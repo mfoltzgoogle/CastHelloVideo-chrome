@@ -1,3 +1,5 @@
+// -*- Mode: Javascript; -*-
+
 /**
  * Cast initialization timer delay
  **/
@@ -529,24 +531,39 @@ function setMediaVolume(level, mute) {
 }
 
 /**
- * set receiver volume
- * @param {Number} level A number for volume level
- * @param {Boolean} mute A true/false for mute/unmute
+ * Sets receiver volume.
+ * @param {number} level A number for volume level, 0.0 - 1.0.
  * @this setReceiverVolume
  */
-function setReceiverVolume(level, mute) {
+function setReceiverVolume(level) {
+  if (!session || typeof level != 'number' || level < 0.0 || level > 1.0)
+    return;
+
+  session.setReceiverVolumeLevel(
+    level,
+    mediaCommandSuccessCallback.bind(this, 'media set-volume done'),
+    onError);
+  currentVolume = level;
+}
+
+/**
+ * Sets receiver muted status.
+ * @param {boolean} muted True to mute, false to unmute.
+ * @this setReceiverMuted
+ */
+function setReceiverMuted(muted) {
   if (!session)
     return;
 
-  if (!mute) {
-    session.setReceiverVolumeLevel(level,
-      mediaCommandSuccessCallback.bind(this, 'media set-volume done'),
+  if (muted) {
+    session.setReceiverMuted(
+      true,
+      mediaCommandSuccessCallback.bind(this, 'media set-muted done'),
       onError);
-    currentVolume = level;
-  }
-  else {
-    session.setReceiverMuted(true,
-      mediaCommandSuccessCallback.bind(this, 'media set-volume done'),
+  } else if (muted == false) {
+    session.setReceiverMuted(
+      false,
+      mediaCommandSuccessCallback.bind(this, 'media set-unmuted done'),
       onError);
   }
 }
@@ -565,11 +582,11 @@ function muteMedia() {
   // setMediaVolume(currentVolume, true);
   if (muteunmute.innerHTML == 'Mute media') {
     muteunmute.innerHTML = 'Unmute media';
-    setReceiverVolume(currentVolume, true);
+    setReceiverMuted(true);
     appendMessage('media muted');
   } else {
     muteunmute.innerHTML = 'Mute media';
-    setReceiverVolume(currentVolume, false);
+    setReceiverMuted(false);
     appendMessage('media unmuted');
   }
 }
