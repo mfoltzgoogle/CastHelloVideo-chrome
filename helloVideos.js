@@ -583,11 +583,9 @@ function muteMedia() {
   if (muteunmute.innerHTML == 'Mute media') {
     muteunmute.innerHTML = 'Unmute media';
     setReceiverMuted(true);
-    appendMessage('media muted');
   } else {
     muteunmute.innerHTML = 'Mute media';
     setReceiverMuted(false);
-    appendMessage('media unmuted');
   }
 }
 
