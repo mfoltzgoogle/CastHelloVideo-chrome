@@ -122,8 +122,8 @@ function onInitSuccess() {
  * @param {Object} e A chrome.cast.Error object.
  */
 function onError(e) {
-  console.log('Error' + e);
-  appendMessage('Error' + e);
+  console.log('Error', e);
+  appendMessage('Error: ' + JSON.stringify(e));
 }
 
 /**
@@ -140,6 +140,15 @@ function onSuccess(message) {
 function onStopAppSuccess() {
   console.log('Session stopped');
   appendMessage('Session stopped');
+  document.getElementById('casticon').src = CAST_ICON_THUMB_IDLE;
+}
+
+/**
+ * callback on success for leaving session
+ */
+function onLeaveSessionSuccess() {
+  console.log('Session left');
+  appendMessage('Session left');
   document.getElementById('casticon').src = CAST_ICON_THUMB_IDLE;
 }
 
@@ -286,6 +295,16 @@ function joinSessionBySessionId() {
  */
 function stopApp() {
   session.stop(onStopAppSuccess, onError);
+  if (timer) {
+    clearInterval(timer);
+  }
+}
+
+/**
+ * leave session
+ */
+function leaveSession() {
+  session.leave(onLeaveSessionSuccess, onError);
   if (timer) {
     clearInterval(timer);
   }
